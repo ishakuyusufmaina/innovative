@@ -16,6 +16,7 @@
   --shadow: 0 10px 25px rgba(0,0,0,.35);
   --radius: 16px;
   --radius-sm: 10px;
+  --border: #2a2a2a;
 }
 
 html, body {
@@ -287,3 +288,15 @@ caption strong {
   #recBtn{ width: 100%; }
 }
 
+
+select {
+      padding: 0.6rem 0.8rem;
+      margin: 0.5rem 0.4rem 1rem 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }

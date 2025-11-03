@@ -41,6 +41,11 @@
 
   </div>
   <form id="form">
+    <p>Extra Fees
+      <select id="extraFees" multiple>
+    </select>
+    </p>
+    
     <p id="amountInWord"></p>
     <input id="amount" 
       inputmode="numeric"
@@ -91,7 +96,15 @@
       const analytics = getAnalytics(app);
       const auth = getAuth(app);
     const db = getFirestore(app);
-
+  const feesRef = doc(db, schoolId, "fees");
+  let feesDoc = await getDoc(feesRef);
+  let fees = feesDoc.exists()? feesDoc.data() : {};
+  
+  for (const fee in fees){
+    let a = fees[fee];
+    extraFees.innerHTML +=`<option value="${a}">${fee} (${a})</option>`;
+  }
+  
   initialize();
    
   async function initialize(){
@@ -106,7 +119,8 @@
     
     const std = JSON.parse(localStorage.getItem("student"));
     const session = JSON.parse(localStorage.getItem("session"));
-    const fixedFee = localStorage.getItem("fee");
+    const fixedFee = Number(localStorage.getItem("fee"));
+    
     
     console.log(std.amountPaid);
   
@@ -118,16 +132,28 @@
     let year = session.year//p.get("year");
     let name = std.name //p.get("name");
     let txt = (e, t)=>e.textContent = t;
+    let getSubtotal = ()=>{
+      let subtotal = 0;
+      Array.from(extraFees.selectedOptions).forEach(opt=>subtotal += Number(opt.value));
+      return subtotal;
+    }
     txt(stdId, id); txt(stdCls, cls); 
     feeTerm.innerHTML = terms[term]; txt(feeYear, year);
     txt(stdName, name); txt(due, "₦"+fixedFee);
+    extraFees.onchange = e=>{
+      let subtotal = getSubtotal();
+      //alert(subtotal);
+       txt(due, "₦"+(fixedFee+subtotal));
+      listenAndUpdate(fixedFee+getSubtotal(), getQuery(sfCoord));
+
+    }
     const sfCoord = {id, "class": cls, term, year}
-    listenAndUpdate(fixedFee, getQuery(sfCoord));
+    listenAndUpdate(fixedFee+getSubtotal(), getQuery(sfCoord));
     amount.oninput = e=>{
       let amt = Number(amount.value);
       let aiw = f2w(amt);
       amountInWord.textContent = aiw.toUpperCase() +" NAIRA ONLY";
-      let balance = fixedFee - std.amountPaid + amt;
+      let balance = (fixedFee+ getSubtotal()) - std.amountPaid + amt;
       if (balance < 0) 
         amount.setCustomValidity("Amount paid cannot be greater than amount due");
      else amount.setCustomValidity("");
@@ -140,7 +166,7 @@
       const fee = {
         student: id,
         amount: Number(amount.value),
-        due: fixedFee,
+        due: fixedFee+getSubtotal(),
         year,
         term,
         "class": cls,
