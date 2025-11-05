@@ -75,7 +75,7 @@
     }
 
     /* Table */
-    table {
+    table.students {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
@@ -84,7 +84,7 @@
       overflow: hidden;
     }
 
-    th, td {
+    th.std, td.std {
       padding: 12px 10px;
       border-bottom: 1px solid var(--border);
       text-align: center;
@@ -119,28 +119,43 @@
       transform: scale(1.05);
     }
 
+  table.psycho {
+    border-radius: 8px;
+      border: 2px solid var(--border);
+ 
+  }
+  table.psycho td.domain {
+    text-align: right;
+    
+  }
+  table.psycho td {
+    text-align: left;    
+    padding: 6px 5px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+  }
     /* Responsive table */
     @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
+      table.std, thead.std, tbody.std, th.std, td.std, tr.std {
         display: block;
       }
       thead {
         display: none;
       }
-      tr {
+      tr.std {
         margin-bottom: 1rem;
         border: 1px solid var(--border);
         border-radius: 8px;
         overflow: hidden;
         background: var(--card);
       }
-      td {
+      td.std {
         text-align: left;
         border: none;
         padding: 0.8rem;
         position: relative;
       }
-      td::before {
+      td.std::before {
         content: attr(data-label);
         font-weight: 600;
         text-transform: uppercase;
@@ -184,7 +199,7 @@
     </select>
   </div>
 
-  <table>
+  <table class="students">
     <thead>
       <tr>
         <th>Passport</th>
@@ -192,10 +207,11 @@
         <th>Name</th>
         <th>Gender</th>
         <th>Religion</th>
+        <th>Behaviour and Activities</th>
         <!--th>Parent</th-->
       </tr>
     </thead>
-    <tbody id="table"></tbody>
+    <tbody id="table" class="std"></tbody>
   </table>
 
   <button id="add">Add</button>
@@ -314,18 +330,19 @@ let sectionDoc = await getDoc(sectionRef);
     let clas = key(classSelect.value);
     if (!clas) return;
     row.classList.add("record");
+    row.classList.add("std");
     console.log(result.picURL);
     let picURL = optimizeCloudinaryUrl(result.picURL);
       row.innerHTML = `
-      <td class="passport">
+      <td class="passport std">
       <img src="${picURL}">
       <input type="file" accept="image/*" capture="environment" id="cameraInput">
       </td>
-      <td class="id">${result.id??"Not Yet Generated"}</td>
-       <td class="name" contenteditable>
+      <td class="id std">${result.id??"Not Yet Generated"}</td>
+       <td class="name std" contenteditable>
         ${result.name.toUpperCase()}
       </td> 
-      <td>
+      <td class="std">
          <select class="gender">
             <option value=""> -select gender- </option>
             <option value="female">Female</option>
@@ -333,15 +350,15 @@ let sectionDoc = await getDoc(sectionRef);
         </select>
     
     </td>    
-    <td>
-    <select class="religion" value="Islam">
+    <td class="std">
+    <select class="religion std" value="Islam">
          <option value=""> -select religion- </option>
          <option value="Islam">Muslim</option>
          <option value="Christian">Christian</option>
     </select>
     </td>
-    <td class="psycho"></td>
-    <!--td class="parent">
+    <td class="psycho std"></td>
+    <!--td class="parent std">
     ${parent? `<a href="parent/profile.html?pin=${parent.pin}">PIN:`+parent.pin+'<br>'+parent.name.toUpperCase()+"</a>"
     : 
     '<span >Link parent by</span><button class="pin-link">PIN</button> | <button class="match-link">matching</button>'}
@@ -350,15 +367,24 @@ let sectionDoc = await getDoc(sectionRef);
     let psychoElm = row.querySelector(".psycho");
     let domains = sections[result.section].psychometrics??[];
     result.psychometrics??={};
+    let t = document.createElement("table");
+    t.classList.add("psycho");
+    psychoElm.append(t);
     domains.forEach(domain=>{
+      let r = t.insertRow();
+      let d = r.insertCell();
+      d.innerHTML = domain;
+      d.classList.add("domain");
       console.log(domain);      
       let v = result.psychometrics[domain]??0;
       let pElm = document.createElement("p");
       pElm.innerHTML =`<input type="range" min="0" max="5" value="${v}" step="1"> ${domain} <span>(${v})</span>`
-      psychoElm.append(pElm);
-      pElm.querySelector("input").oninput = e=>{
+     // psychoElm.append(pElm);
+      let meter = r.insertCell();
+      meter.innerHTML = `<input type="range" min="0" max="5" value="${v}" step="1"><span>${v}</span>`
+      meter.querySelector("input").oninput = e=>{
         let v = e.target.value;
-        pElm.querySelector("span").innerHTML = `(${v})`;
+        meter.querySelector("span").innerHTML = `${v}`;
         result.psychometrics[domain] = v;
       }
     })
