@@ -297,7 +297,9 @@ let sectionDoc = await getDoc(sectionRef);
       let teachers = (await getDoc(doc(db, schoolId, "teachers"))).data()
        let teacher = teachers[id];
        if (sectionDoc.exists()){
-           
+           teacher.adminFunctions??={};
+         teacher.adminFunctions.students??={};
+         teacher.adminFunctions.students.resources??=[];
            if (teacher.role??{}.fm){
              teacher.adminFunctions.students.resources = Array.from(new Set(teacher.adminFunctions.students.resources.concat(teacher.role.fm)));
            }
