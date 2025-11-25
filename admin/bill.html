@@ -248,7 +248,7 @@
       const addCredit = parseInt(prompt("Enter student capacity", "0"));
       if (!isNaN(addCredit) && addCredit > 0) {
         //credit += addCredit;
-        let amount = addCredit*200;
+        let amount = addCredit*rate;
         console.log(amount);
         initilize(amount);
         updateDisplay();
