@@ -122,7 +122,7 @@
       const auth = getAuth(app);
     const db = getFirestore(app);
   
-  const schoolId = "noble";
+  const schoolId = "innovative";
   const rolesRef = doc(db, schoolId, "roles");
   let rolesDoc = await getDoc(rolesRef);
   let roles = rolesDoc.exists()? rolesDoc.data().list : [];
