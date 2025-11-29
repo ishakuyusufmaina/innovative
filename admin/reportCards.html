@@ -4,13 +4,14 @@
 <head>
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="../config.js"></script>
- <script src="../batch2.js"></script>
-
+  <script src="../config.js"></script>
+  <script src="../batch2.js"></script>
+  
   <!-- Include this in the <head> of your HTML -->
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
   <script src="rc/rc.js"></script>
   <title>Position</title>
+  
 </head>
 <body>
   <h1 class="no-print">
@@ -22,8 +23,7 @@
     <option> -select session- </option>
   </select>
   <select id="classSelect">
-    <option value=""> -select class- </option>
-    
+    <option value=""> [select class] </option>    
   </select>
   
   
@@ -131,7 +131,7 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
   var scoremeta;
   var predefinedAsms;
   var useDerivedAsm;
-     var sectSubjs =[];
+  var sectSubjs =[];
    if (sectionDoc.exists()){
    let sects = sectionDoc.data();
      
@@ -165,18 +165,18 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
       sections[sect].classes = sections[sect].classes.map(c=>c.trim());
       if (sections[sect].classes.includes(classSelect.value)) {
         sectK = sect;
-        console.log(sect);
+        //console.log(sect);
         break;
       }
     }
     
-   console.log( sections[sectK]);
+   //console.log( sections[sectK]);
     srp = sections[sectK].srp;
     scoreInterpretations = sections[sectK].scoreInterpretations;
     scoreSheetConfig = sections[sectK].scoreSheetConfig;
     let assessments = scoreSheetConfig.assessments??[{name: "CA", subtotal: 30}];
     averageInterps = sections[sectK].averageInterpretations??{};
-    console.log(averageInterps);
+    //console.log(averageInterps);
    // console.log(JSON.stringify(scoreSheetConfig));
     sectSubjs = sections[sectK].subjects;
     predefinedAsms = [];
@@ -333,7 +333,7 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
       `;
      
       let subjects = std.subjects??{};
-      console.log(JSON.stringify(subjects));
+      //console.log(JSON.stringify(subjects));
       let subjKeys = Object.keys(subjects).sort();
       let stdReg = std.religion;
       if (!stdReg) {
@@ -366,13 +366,17 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
           let k = a.name.toLowerCase();
           total += Number(termScores[k].replace("-", "0"))
         })
-        console.log(total);
+        total += Number(termScores.exam.replace("-", "0"))
+       // console.log(total);
         let t1= Number(subjects[subj][termIndex].test1 ?? 0);
         let t2 = Number(subjects[subj][termIndex].test2 ?? 0);
         let t3 = Number(subjects[subj][termIndex].test3 ?? 0);
         //let score = t1 + t2 +t3 + Number(subjects[subj][termIndex].exam);
         let interp = interpret(total, scoreInterpretations);
-       // console.log(interp);
+        scoremeta[subj]??={};
+        scoremeta[subj].students??=[];
+        let stdSubj = scoremeta[subj].students.find(s=>s.id==std.id)??{id: std.id, position: "-"};
+       console.log(JSON.stringify(stdSubj));
  //     subjects.forEach(subj=>{
         let row =document.createElement("tr");
         row.innerHTML = `
@@ -382,7 +386,7 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
         }
         <td>${subjects[subj][termIndex].exam}</td>
         <td>${total}</td>
-        <td>${(scoremeta[subj]??{students:[{id: std.id, position: "-"}]}.students.find(s=>s.id==std.id)).position}</td>
+        <td>${stdSubj.position}</td>
         <td>${interp.grade? interp.grade : grade(0, score) /*grade(t1+t2+t3, Number(subjects[subj][termIndex].exam))*/}</td>
         <td>${interp.remark? interp.remark : remark(0, score) /*remark(t1+t2+t3, Number(subjects[subj][termIndex].exam))*/}</td>
         
@@ -399,7 +403,7 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
       let psychoElm = document.createElement("table");
       let txt = "";
       let domains = sections[std.section].psychometrics;
-      console.log(domains, std.section);
+      //console.log(domains, std.section);
       
       domains.forEach(d=>{
         let r = psychoElm.insertRow();
@@ -411,7 +415,8 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
         mC.innerHTML = measure+"/5";
       //  txt +=`<li>${d} - ${measure}/5</li>`;
       });
-      let psychoCont = document.createElement("table");
+      let psychoCont = document.createElement("div");
+      psychoCont.className = "psycho";
       psychoCont.innerHTML = `
       <h3>Behaviour and Activities</h3>
       `;
@@ -692,6 +697,12 @@ table th:first-child {
       border: 1px solid #007dbb;
       text-align: center;
     }
+  th {
+    max-width: 100px;   /* adjust size */
+  white-space: nowrap;
+  overflow: hidden;
+//  text-overflow: ellipsis;
+  }
  h1, .save-container {
  //   display: inline-block;
 text-align: center;
@@ -851,6 +862,10 @@ table tr:nth-child(odd) {
 
   .n, .c {
     display: none;
+  }
+  
+  .psycho {
+    font-size: 12px;
   }
   </style>
 </body>
