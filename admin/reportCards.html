@@ -304,29 +304,30 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
       <img class="logo" src="../logo.png">
       </div>
       <h3>TERMINAL REPORT</h3>
-      <table class="student-info-table">
+ <table class="student-info-table">
       <tr class="std-name">      
-        <td colspan="2">NAME: ${std.name.toUpperCase()}</td>
+        <td>NAME: ${std.name.toUpperCase()}</td>
+         <td>GENDER: ${std.gender}</td>
       </tr>
       <tr>
-      <td>GENDER: ${std.gender}</td>
+      <td>TERM: ${sessionSelect.value.split(",")[1]}</td>
       <td>CLASS: ${classSelect.value}</td>
       </tr>
       <tr>    
-      <td>SESSION: ${sessionSelect.value}</td>
-      <td>RESUMPTION DATE: <strong><time>_</time></strong></td>
+      <td>SESSION: ${sessionSelect.value.split(",")[0]}</td>
+      <td>RESUMPTION: <strong><time>5<sup>th</sup> JANUARY, 2026</time></strong></td>
       </tr>
       <tr>
-      <td>NUMBER IN CLASS: ${students.length}</td>      
-      <td>POSITION: ${std.position}</td>
+      <td>NO: IN CLASS: ${students.length}</td>      
+      <td style="font-weight: bolder">POSITION: ${toSuperscriptOrdinal(Number(std.position))}</td>
       </tr>
-      </table>   
+      </table> 
       </caption>
       <tr>
       <th>SUBJECT</th>${
           getAsmHeads(predefinedAsms, scoreSheetConfig.exam)
       }
-      <th>POS</th>
+      <!--th>POS</th-->
       <th>GRADE</th>
       <th>REMARK</th>
       </tr>
@@ -340,8 +341,8 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
      // alert("STUDENT " + std.name + "NRS"); 
      // return;
       }
-      let faith = stdReg == "Islam"? "Muslim" : "Christrian";
- 
+      let faith = stdReg == "Islam"? "Muslim" : "Christian";
+ console.log(faith);
       //for (const subj in subjects) 
       subjKeys.forEach(subj=>{
         //score of the currrent term
@@ -355,18 +356,23 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
             score = 0;
             a.derivatives.forEach(d=>{
               k = d.toLowerCase();
-              score += Number(termScores[k].replace("-"));
+              score += Number(termScores[k].replace("-", "0"));
             })
           } else {
             score = termScores[k];
           }
           return score;
         })
+        let l="";
         asms.forEach(a=>{
           let k = a.name.toLowerCase();
+          l +=termScores[k].trim();
           total += Number(termScores[k].replace("-", "0"))
         })
         total += Number(termScores.exam.replace("-", "0"))
+        l +=termScores.exam.trim();
+        l = l.replaceAll("-", "");
+        if (!l.length) return;
        // console.log(total);
         let t1= Number(subjects[subj][termIndex].test1 ?? 0);
         let t2 = Number(subjects[subj][termIndex].test2 ?? 0);
@@ -386,7 +392,7 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
         }
         <td>${subjects[subj][termIndex].exam}</td>
         <td>${total}</td>
-        <td>${stdSubj.position}</td>
+        <!--td>${stdSubj.position}</td-->
         <td>${interp.grade? interp.grade : grade(0, score) /*grade(t1+t2+t3, Number(subjects[subj][termIndex].exam))*/}</td>
         <td>${interp.remark? interp.remark : remark(0, score) /*remark(t1+t2+t3, Number(subjects[subj][termIndex].exam))*/}</td>
         
@@ -431,7 +437,7 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
       <br>
       
       COMMENT: <strong class="comment">${comnt}</strong>
-    <img id="stamp" src="stamp.png">
+    <img id="stamp" src=${isSec(classSelect.value)? "stamp-sec.png" : "stamp-nur-pri.png"}>
       `;
       wrapper.append(p);
       p.classList.add("rfooter");
@@ -542,6 +548,32 @@ container.append(hr, wrapper);
     let lastInterp = interpsModel[interpsModel.length-1];
     return lastInterp?.comment || '';
   }
+  
+    function isSec(cls){
+    return cls.toLowerCase()[0] == "s" || cls.toLowerCase()[0] == "j"
+  }
+  
+  
+    function toSuperscriptOrdinal(num) {
+  const suffixes = {
+    '1': 'ˢᵗ',
+    '2': 'ⁿᵈ',
+    '3': 'ʳᵈ'
+  };
+
+  // Handle 11th, 12th, 13th as special cases
+  const lastTwo = num % 100;
+  let suffix = 'ᵗʰ';
+
+  if (lastTwo < 11 || lastTwo > 13) {
+    const lastDigit = num % 10;
+    suffix = suffixes[lastDigit] || 'ᵗʰ';
+  }
+
+  return num + suffix;
+}
+  
+  
   </script>
   
 <style>
@@ -770,7 +802,7 @@ text-align: center;
   #top-hl, #bottom-hl {
     border: 8px solid #b12449;
     position: absolute;
-    width: calc(100% - 22px);
+    width: calc(100%);
     left: 0;
     bottom: 40px;
     z-index: 1;
@@ -788,7 +820,7 @@ text-align: center;
   #bottom-hl {
  
     position: absolute;
-    width: calc(100% - 22px);
+    width: calc(100%);
     left: 0;
     bottom: 20px;
   }
@@ -854,8 +886,8 @@ table tr:nth-child(odd) {
  // background-color: #ffffff;
 }
     table td {
-//  white-space: nowrap;
-     // word-break: keep-all;
+  white-space: nowrap;
+      word-break: keep-all;
     }
 
     .psycho {
@@ -871,10 +903,13 @@ table tr:nth-child(odd) {
   .psycho {
     font-size: 12px;
   }
-
-   td {
-    max-width: 200px;
-   }
+  td {
+    max-width: 250px;
+  }
+  
+    .student-info-table {
+    text-transform: uppercase;
+  }
   </style>
 </body>
 </html>
