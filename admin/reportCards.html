@@ -857,20 +857,15 @@ text-align: center;
       border-radius: 0%;
     }
      
-    .stamp {
-    
-  
-      
-    
-    
-  }
+    td {
+  white-space: normal;        /* Allow line breaks */
+  word-break: break-word;     /* Break long words */
+  overflow-wrap: break-word;  /* Modern standard */
+}
 
     
     
-    table {
-  border-collapse: collapse;
-  width: 100%;
-}
+    
 
 table th, table td {
   padding: 2px;
@@ -887,8 +882,8 @@ table tr:nth-child(odd) {
  // background-color: #ffffff;
 }
     table td {
-  white-space: nowrap;
-      word-break: keep-all;
+ // white-space: nowrap;
+      //word-break: keep-all;
     }
 
     .psycho {
