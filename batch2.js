@@ -9,4 +9,14 @@
     measurementId: "G-3T2QB03T3L"
   };
 
+const paybookConfig = {
+    apiKey: "AIzaSyAwrWSv_pD2keej4qIjx1jeeRq5K_DBKYA",
+    authDomain: "mainafly-school-fees.firebaseapp.com",
+    projectId: "mainafly-school-fees",
+    storageBucket: "mainafly-school-fees.firebasestorage.app",
+    messagingSenderId: "813090872440",
+    appId: "1:813090872440:web:b1b1bc39ab82256fa2a18d",
+    measurementId: "G-E6B3WQ6P8Q"
+  };
+
   
