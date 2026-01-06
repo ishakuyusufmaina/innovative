@@ -781,9 +781,11 @@ function isEqual(a, b) {
   
   
   printBtn.onclick = e=>{
-    alert();
+   
     if (!currentStudents) return;
     window.localStorage.setItem("students", JSON.stringify(currentStudents));
+   window.localStorage.setItem("class", classSelect.value);
+
     window.location.href = "students-print.html";
   }
   </script>
