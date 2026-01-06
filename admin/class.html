@@ -197,7 +197,9 @@
     <select id="classSelect">
       <option value=""> -select class- </option>
     </select>
+    <button class="button" id="printBtn">Print</button>
   </div>
+  
 
   <table class="students">
     <thead>
@@ -243,7 +245,7 @@
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const batch = writeBatch(db);
+  var batch = writeBatch(db);
   let currentStudents = null;
     
     const terms = ["first term", "second term", "third term"];
@@ -367,11 +369,13 @@ let sectionDoc = await getDoc(sectionRef);
     </td--> 
       `;
     let psychoElm = row.querySelector(".psycho");
+    console.log(result.class);
+    result.section??=getSectionByClass(result.class, sections)
     let domains = sections[result.section].psychometrics??[];
     result.psychometrics??={};
     let t = document.createElement("table");
     t.classList.add("psycho");
-    psychoElm.append(t);
+  //  psychoElm.append(t);
     domains.forEach(domain=>{
       let r = t.insertRow();
       let d = r.insertCell();
@@ -609,18 +613,19 @@ add.onclick = e=>{
      // return;
    
       let gStudents = {};
-        gStdsDoc.forEach(doc=>{
+        gStdsDoc.forEach(d=>{
           
-            let std = doc.data();
+            let std = d.data();
             let id = std.id;
             console.log(id);
             stdIds.push(id);
             if (!stds[id]) {
               std.picURL ??="";
               std.religion ??="";
-               let {name, gender, id, picURL, religion} = std;
-               stds[id] = {name, gender, id, picURL, religion};
-              console.log(std.gender, std.name, std.picURL);
+             //  let {name, gen} = std;
+               stds[id] = {...std};
+              stds[id].section = getSectionByClass(std.class, sections);
+              batch.update(doc(db, schoolId, "db", "students", d.id), {regStatus: "returning"});
            }           
         });
         let supersetIds = Array.from(new Set(cbsIds.concat(stdIds)));
@@ -631,7 +636,9 @@ add.onclick = e=>{
           console.log(id);
         });
       
+        await batch.commit();
         await setDoc(stdsRef, stds);  
+        batch = writeBatch(db);
         currentStudents = stds;  
     }
     let size = Object.values(stds).length;
@@ -666,11 +673,7 @@ add.onclick = e=>{
                 console.log(lastId);
                
                 const lastStdId = `${y1.slice(-2)}/${y2.slice(-2)}/${t}/${lastId}`;
-              /*  let newDoc = await transaction.get(doc(db, schoolId, "db", "students", lastStdId.replaceAll("/","_")));
-                if (newDoc.exists()){
-                    console.log('Conflict!');
-                    return
-                }*/
+            
                 let upStd = {};
                 student.id = lastStdId;
                 upStd.class = classSelect.value.toLowerCase();
@@ -763,6 +766,26 @@ function isEqual(a, b) {
 //const data = await searchAndMatch("child.html");
 //console.log("Got:", data);
   
+  
+  function getSectionByClass(cls, sections){
+     let section = null;
+     for (const sect in sections){    
+       let classes = sections[sect].classes.map(c=>key(c).toLowerCase())
+       console.log(classes, cls);
+       if (classes.includes(key(cls).toLowerCase())) {
+         section = sect;   
+       }
+     } 
+     return section
+  }
+  
+  
+  printBtn.onclick = e=>{
+    alert();
+    if (!currentStudents) return;
+    window.localStorage.setItem("students", JSON.stringify(currentStudents));
+    window.location.href = "students-print.html";
+  }
   </script>
 </body>
 </html>
