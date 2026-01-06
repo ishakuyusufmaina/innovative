@@ -126,10 +126,13 @@
   
   const students = Object.values(JSON.parse(localStorage.getItem("students")));
   students.sort((a, b)=> a.name.localeCompare(b.name));
-  const tbody = document.getElementById("studentTableBody");
+const cls = document.getElementById("cls");
+    
+    const tbody = document.getElementById("studentTableBody");
 
     students.forEach((student, index) => {
       const row = document.createElement("tr");
+      student.class??="";
       cls.innerHTML = student.class.toUpperCase();
       row.innerHTML = `
         <td>${index + 1}</td>
