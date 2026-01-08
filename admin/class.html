@@ -370,7 +370,9 @@ let sectionDoc = await getDoc(sectionRef);
       `;
     let psychoElm = row.querySelector(".psycho");
     console.log(result.class);
-    result.section??=getSectionByClass(result.class, sections)
+    result.class??= classSelect.value.trim().toLowerCase();
+    if (!result.section || result.section=="null") result.section = getSectionByClass(result.class, sections);
+   if (!result.section) {alert(result.class + result.section)}
     let domains = sections[result.section].psychometrics??[];
     result.psychometrics??={};
     let t = document.createElement("table");
@@ -517,7 +519,8 @@ add.onclick = e=>{
     name: "",
     gender: "",
     religion: "",
-    section    
+    section,
+    class: cls.towerCase()
   }
   addRow(result);
     let lastN = Number(result.sn);
@@ -770,12 +773,13 @@ function isEqual(a, b) {
   function getSectionByClass(cls, sections){
      let section = null;
      for (const sect in sections){    
-       let classes = sections[sect].classes.map(c=>key(c).toLowerCase())
+       let classes = sections[sect].classes.map(c=>key(c).trim().toLowerCase())
        console.log(classes, cls);
-       if (classes.includes(key(cls).toLowerCase())) {
+       if (classes.includes(key(cls).trim().toLowerCase())) {
          section = sect;   
        }
      } 
+   
      return section
   }
   
