@@ -47,7 +47,7 @@
     </div>
   </div>
 
-    <script src="../../config.js"></script>
+   <script src="../../config.js"></script>
   <script src="../../batch2.js"></script>
   <script src="utility.js"></script>
   <script type="module" defer>
@@ -239,8 +239,18 @@ const terms = ["first term", "second term", "third term"];
         presentResult();
         onSnapshot(pbQuery, snap => {
             let total = 0;
-            snap.forEach(d => total += d.data().amount);
-            sectStd.amountPaid = total;
+            let timestamps = [];
+            snap.forEach(d => {
+              total += d.data().amount;
+              timestamps.push(d.data().timestamp);
+              console.log(d.data().timestamp);
+            });
+          timestamps = timestamps
+          .sort((a, b) => b.toMillis() - a.toMillis())
+          .map(ts=>formatTimestamp(ts));
+          sectStd.amountPaid = total;
+            sectStd.lastPaidAt = timestamps[0];
+           //sectStd.payment = 
             console.log("amount paid", student.name, total);
             sectStd.render?.();
         });
@@ -306,6 +316,8 @@ const terms = ["first term", "second term", "third term"];
         <div class="studentClass">${student.class.toUpperCase()}</div>
         <div class="studentClass">Amount Paid: ₦${amountPaid}</div>
        <div class="studentClass">Outstanding: ₦${outstanding}</div>
+      <div class="studentClass">Last timestamp: ${student.lastPaidAt??"------"}</div>
+
       </div>
       <div class="account studentInfo">
         <button class="button">Generate new account</button>
@@ -390,7 +402,7 @@ const terms = ["first term", "second term", "third term"];
   
   
   async function createDVA(studentId, schoolId, schoolBatch, session, term){
-    const response= await fetch("https://cfx-mainafly.netlify.app/.netlify/functions/assign-dva", {
+    const response= await fetch("http://cfx-mainafly.netlify.app/.netlify/functions/assign-dva", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -415,6 +427,17 @@ const terms = ["first term", "second term", "third term"];
      } 
      return section
   }
+  
+  function formatTimestamp(ts) {
+  const d = ts.toDate();
+
+  return `${d.getFullYear()}-${
+    String(d.getMonth() + 1).padStart(2, "0")
+  }-${String(d.getDate()).padStart(2, "0")}
+  ${String(d.getHours()).padStart(2, "0")}:${
+    String(d.getMinutes()).padStart(2, "0")
+  }`;
+}
   </script>
 </body>
 </html>
