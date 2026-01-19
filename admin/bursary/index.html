@@ -402,6 +402,7 @@ const terms = ["first term", "second term", "third term"];
   
   
   async function createDVA(studentId, schoolId, schoolBatch, session, term){
+    alert("On hold"); return;
     const response= await fetch("https://cfx-mainafly.netlify.app/.netlify/functions/assign-dva", {
       method: "POST",
       headers: {
