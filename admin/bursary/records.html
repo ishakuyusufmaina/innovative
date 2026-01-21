@@ -151,20 +151,22 @@ console.log("Total payments:", cSnap.data().count);
  // }
   snap.forEach(doc => {
     const p = doc.data();
-    total += p.amount || 0;
+    let amount = Number(p.amount);
+    amount = amount - Math.min(amount * 0.01, 300);
+    total += amount; //p.amount || 0;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${p.studentName}</td>
       <td>${p.class}</td>
-      <td>${p.amount}</td>
+      <td>${amount}</td>
       <td>${terms[p.term]}</td>
       <td>${p.reference}</td>
       <td>${p.timestamp?.toDate().toLocaleDateString()}</td>
     `;
     tbody.appendChild(tr);
   });
-
+  document.getElementById("totalAmount").innerText = total;
     lastDoc = snap.docs[snap.docs.length - 1];
   lastCounter += PAGE_SIZE;
   
