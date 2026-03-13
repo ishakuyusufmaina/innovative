@@ -1,0 +1,140 @@
+*{
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body{
+  margin:20px;
+  background:#f7f7f7;
+}
+
+h1{
+  margin-bottom:10px;
+}
+
+/* container */
+
+#brContainer{
+  width:100%;
+  overflow-x:auto;
+  background:white;
+  border:1px solid #ccc;
+  padding:10px;
+}
+
+/* table */
+
+#broadsheet{
+  border-collapse:collapse;
+  width:max-content;
+  min-width:100%;
+  font-size:13px;
+}
+
+/* borders */
+
+#broadsheet th,
+#broadsheet td{
+  border:1px solid #444;
+  padding:4px 6px;
+}
+
+/* header */
+
+#broadsheet thead th{
+  background:#2c3e50;
+  color:white;
+ text-align:center;
+  font-weight:bold;
+}
+#broadsheet thead th.header-subject{
+//  text-align:right;
+  
+}
+#broadsheet thead th.header-subject span{
+  display: inline-block;
+  text-align: center;
+  margin: auto;
+  transform: rotate(45deg);
+  
+}
+#broadsheet thead th.header-student{
+  text-align:left;
+  
+}
+.subject {
+  vertical-align:bottom;
+  writing-mode: vertical-rl;
+  vertical-align: middle;
+}
+
+/* first column (student names) */
+
+#broadsheet tbody td:first-child{
+  text-align:left;
+  font-weight:bold;
+  min-width:180px;
+  background:#fafafa;
+}
+
+/* score cells */
+
+#broadsheet tbody td{
+  text-align:center;
+  min-width:40px;
+}
+
+/* zebra rows */
+
+#broadsheet tbody tr:nth-child(even){
+  background:#f4f6f8;
+}
+
+/* hover */
+
+#broadsheet tbody tr:hover{
+  background:#e8f1ff;
+}
+
+/* select container */
+
+.select-container{
+  margin-bottom:10px;
+}
+
+select{
+  padding:6px;
+  margin-right:5px;
+}
+
+/* sticky headers */
+
+#broadsheet thead th{
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+
+/* print formatting */
+
+@media print{
+
+  body{
+    background:white;
+  }
+
+  .no-print{
+    display:none;
+  }
+
+  #brContainer{
+    overflow:visible;
+    border:none;
+  }
+
+  #broadsheet{
+    font-size:10px;
+  }
+
+}
+
