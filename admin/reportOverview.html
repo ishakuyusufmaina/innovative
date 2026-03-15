@@ -155,33 +155,46 @@ const bsbody = broadsheet.querySelector("tbody");
 
     const nameCell = row.insertCell();
     nameCell.innerHTML = student.name.toUpperCase();
-
-    headings.forEach(h=>{
-
+    let ssc = 0;
+    headings.forEach((h, i)=>{
+      
       const subjK = h.name.replaceAll(" ","").trim();
+      const cell = row.insertCell();
+      cell.innerHTML = "-";
+      cell.classList.add(subjK);
       const subject = student.subjects[subjK];
       if(!subject) return;
+      ssc++;
       const termSubject = subject[termIndex];
-     termSubject.exam ??="-";
+     // console.log("*"+subjK + "*", JSON.stringify(student.subjects));
+      termSubject.exam ??="-";
+      if (!termSubject.exam){
+        console.log(subjK, JSON.stringify(student.subjects));
+        throw "No assessment and exam"
+      }
+     //termSubject.exam ??="-";
       let total = Number(termSubject.exam.replace("-", 0))
       h.subtotals.forEach(subtotal=>{
-
-        let scoreCell = row.insertCell();
+        let safeK = subtotal.name.toLowerCase();
+        //console.log(JSON.stringify(termSubject), JSON.stringify(termSubject[safeK]), safeK);
+        //if (!termSubject[safeK) return;
+        //let scoreCell = row.insertCell();
         
 
-        scoreCell.innerHTML =
-          termSubject[subtotal.name.toLowerCase()];
-
-        total += Number(scoreCell.textContent.replace("-",0));
+      //  scoreCell.innerHTML =
+          //termSubject[subtotal.name.toLowerCase()];
+       // console.log(safeK, subjK);
+        total += Number((termSubject[safeK] || "-").replaceAll("-", 0));
       });
-      let scoreCell = row.insertCell();
-      scoreCell.innerHTML = termSubject.exam;
-      scoreCell = row.insertCell();
-      scoreCell.innerHTML = total;
+     // let scoreCell = row.insertCell();
+      //scoreCell.innerHTML = termSubject.exam;
+     // let scoreCell = row.insertCell();
+     cell.innerHTML = total;
 
     });
-
+   console.log("Student subject count", ssc);
   });
+  
 
 }
 
@@ -197,13 +210,13 @@ function renderBSHeadings(headings, exam){
 
   const subjHeadRow = theadings.children[0];
   const subtotalRow = theadings.children[1];
-
+let sc = 0;
   headings.forEach(h=>{
-
+   sc++;
     const subjHead = document.createElement("th");
     subjHead.innerHTML = h.name;
     subjHead.classList.add("subject");
-    subjHead.setAttribute("colspan", h.subtotals.length + 2);
+   // subjHead.setAttribute("colspan", h.subtotals.length + 2);
 
     
     
@@ -213,22 +226,23 @@ function renderBSHeadings(headings, exam){
       subtHead.innerHTML = subtotal.subtotal;
       subtHead.setAttribute("rowspan",2);
 
-      subtotalRow.append(subtHead);
+     // subtotalRow.append(subtHead);
 
     });
    subjHeadRow.append(subjHead);
      const examHead = document.createElement("th");
     examHead.innerHTML = exam;
     examHead.setAttribute("rowspan",2);
-    subtotalRow.append(examHead);
+    //subtotalRow.append(examHead);
     
     const totalHead = document.createElement("th");
+    //console.log(h.name, h.total);
     totalHead.innerHTML = h.total;
     totalHead.setAttribute("rowspan",2);
     subtotalRow.append(totalHead);
 
   });
-
+console.log("Subject count", sc);
 }
 
 function key(token){
