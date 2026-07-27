@@ -280,6 +280,8 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
    // position students
     assignPositions(students);
     //present each students' rc
+    const datesHtml = ["<strong><time>4<sup>th</sup> JANUARY, 2026</time></strong>", "<strong><time>26<sup>th</sup> APRIL, 2026</time></strong>", "<strong><time>7<sup>th</sup> SEPTEMBER, 2026</time></strong>"];
+      ]
     students.forEach(std=>{
      // console.log(std.religion);
       let cls = classSelect.value.toLowerCase()[0];      
@@ -315,7 +317,7 @@ let teachersDoc = await getDoc(doc(db, schoolId, "teachers"));
       </tr>
       <tr>    
       <td>SESSION: ${sessionSelect.value.split(",")[0]}</td>
-      <td>RESUMPTION: <strong><time>7<sup>th</sup> SEPTEMBER, 2026</time></strong></td>
+      <td>RESUMPTION: ${datesHtml[termIndex]} </td>
       </tr>
       <tr>
       <td>NO: IN CLASS: ${students.length}</td>      
