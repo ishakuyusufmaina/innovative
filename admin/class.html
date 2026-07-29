@@ -378,7 +378,7 @@ let sectionDoc = await getDoc(sectionRef);
     result.psychometrics??={};
     let t = document.createElement("table");
     t.classList.add("psycho");
-  //  psychoElm.append(t);
+    psychoElm.append(t);
     domains.forEach(domain=>{
       console.log(domain);
       let r = t.insertRow();
