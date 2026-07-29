@@ -374,11 +374,13 @@ let sectionDoc = await getDoc(sectionRef);
     if (!result.section || result.section=="null") result.section = getSectionByClass(result.class, sections);
    if (!result.section) {alert(result.class + result.section)}
     let domains = sections[result.section].psychometrics??[];
+    console.log(domains);
     result.psychometrics??={};
     let t = document.createElement("table");
     t.classList.add("psycho");
   //  psychoElm.append(t);
     domains.forEach(domain=>{
+      console.log(domain);
       let r = t.insertRow();
       let d = r.insertCell();
       d.innerHTML = domain;
