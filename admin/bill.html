@@ -222,7 +222,7 @@
     const creditInput = document.getElementById("creditInput");
 
     function updateDisplay() {
-      const balance = credit - count * rate;
+      const balance = (credit +126000) - count * rate;
       countDisplay.textContent = count;
       creditDisplay.textContent = credit.toLocaleString();
       balanceDisplay.textContent = balance.toLocaleString();
